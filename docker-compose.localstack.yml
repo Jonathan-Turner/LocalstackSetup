@@ -1,0 +1,26 @@
+services:
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack_main
+    ports:
+      - "4566:4566"  # Edge port for all services
+    environment:
+      - SERVICES=cloudwatch,sqs,apigateway,sns,lambda,s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - LAMBDA_EXECUTOR=docker-reuse
+      - LAMBDA_KEEPALIVE_MS=300000 # 5 mins
+    volumes:
+      - localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - lee-local-network
+    restart: unless-stopped
+
+volumes:
+  localstack_data:
+    name: localstack_data
+
+networks:
+  lee-local-network:
+    external: true
